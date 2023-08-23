@@ -13,7 +13,15 @@ class ProductDetailsPage extends StatefulWidget {
 }
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
-  int selectedIndex = 0;
+  late int selectedIndex;
+
+  // int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = (widget.product['sizes'] as List<int>)[0];
+  }
 
   @override
   Widget build(BuildContext context) {

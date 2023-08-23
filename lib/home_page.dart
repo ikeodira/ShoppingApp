@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/global_variables.dart';
-import 'package:shop_app/product_card.dart';
+import 'package:shop_app/cart_page.dart';
+import 'package:shop_app/product_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,8 +11,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<String> filters = const ["All", "Adidas", "Nike", "Bata"];
-
   late String selectedFilter;
+
+  int currentPage = 0;
 
   @override
   void initState() {
@@ -22,104 +23,36 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
-    const border = OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Color.fromRGBO(225, 225, 225, 1),
-      ),
-      borderRadius: BorderRadius.horizontal(
-        left: Radius.circular(50),
-      ),
-    );
-
-    //Begining of Method
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text(
-                    "Shoes\nCollection",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-                const Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Search",
-                      prefixIcon: Icon(Icons.search),
-                      border: border,
-                      enabledBorder: border,
-                      focusedBorder: border,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 120,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: filters.length,
-                itemBuilder: (context, index) {
-                  final filter = filters[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedFilter = filter;
-                        });
-                        // print(filter);
-                      },
-                      child: Chip(
-                        backgroundColor: selectedFilter == filter
-                            ? Theme.of(context).colorScheme.primary
-                            : const Color.fromRGBO(245, 247, 249, 1),
-                        side: const BorderSide(
-                          color: Color.fromRGBO(245, 247, 249, 1),
-                        ),
-                        label: Text(filter),
-                        labelStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 15,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return ProductCard(
-                    title: product["title"] as String,
-                    price: product["price"] as double,
-                    image: product["imageUrl"] as String,
-                    backgroundColor: index.isEven
-                        ? const Color.fromRGBO(216, 240, 253, 1)
-                        : const Color.fromRGBO(245, 247, 249, 1),
-                  );
-                },
-              ),
-            ),
+        body: IndexedStack(
+          index: currentPage,
+          children: pages,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentPage,
+          onTap: (value) {
+            setState(() {
+              currentPage = value;
+            });
+          },
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          selectedFontSize: 0,
+          unselectedFontSize: 0,
+          iconSize: 35,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.shopping_cart), label: "Cart"),
           ],
         ),
       ),
     );
   }
+
+  List<Widget> pages = [
+    const ProductList(),
+    const CartPage(),
+  ];
 }
