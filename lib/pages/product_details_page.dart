@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/cart_provider.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Map<String, Object> product;
@@ -13,15 +15,13 @@ class ProductDetailsPage extends StatefulWidget {
 }
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
-  late int selectedIndex;
+  int selectedSize = 0;
 
-  // int selectedIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    selectedIndex = (widget.product['sizes'] as List<int>)[0];
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   selectedSize = (widget.product['sizes'] as List<int>)[0];
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Image.asset(widget.product['imageUrl'] as String),
+            child: Image.asset(
+              widget.product['imageUrl'] as String,
+              height: 250,
+            ),
           ),
           const Spacer(flex: 2),
           Container(
@@ -70,12 +73,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedIndex = size;
+                              selectedSize = size;
                             });
                           },
                           child: Chip(
                             label: Text(size.toString()),
-                            backgroundColor: selectedIndex == size
+                            backgroundColor: selectedSize == size
                                 ? Theme.of(context).colorScheme.primary
                                 : Colors.white,
                           ),
@@ -87,10 +90,36 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if (selectedSize != 0) {
+                        Provider.of<CartProvider>(context, listen: false)
+                            .addProduct(
+                          {
+                            "id": widget.product['id'],
+                            "title": widget.product['title'],
+                            "price": widget.product['price'],
+                            "imageUrl": widget.product['imageUrl'],
+                            "company": widget.product['company'],
+                            "size": selectedSize,
+                          },
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Product added successfully"),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please select a size!"),
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
-                      minimumSize: const Size(double.infinity, 50),
+                      // minimumSize: const Size(double.infinity, 50),
+                      fixedSize: const Size(350, 50),
                     ),
                     child: const Text(
                       "Add To Cart",

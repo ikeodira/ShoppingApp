@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/product_card.dart';
-import 'global_variables.dart';
+import 'package:shop_app/widgets/product_card.dart';
+import '../global_variables.dart';
 import 'product_details_page.dart';
 
 class ProductList extends StatefulWidget {
@@ -98,31 +98,61 @@ class _ProductListState extends State<ProductList> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: products.length,
-            itemBuilder: (context, index) {
-              final product = products[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return ProductDetailsPage(product: product);
+          child: size.width > 650
+              ? GridView.builder(
+                  itemCount: products.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 2,
+                  ),
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return ProductDetailsPage(product: product);
+                            },
+                          ),
+                        );
                       },
-                    ),
-                  );
-                },
-                child: ProductCard(
-                  title: product["title"] as String,
-                  price: product["price"] as double,
-                  image: product["imageUrl"] as String,
-                  backgroundColor: index.isEven
-                      ? const Color.fromRGBO(216, 240, 253, 1)
-                      : const Color.fromRGBO(245, 247, 249, 1),
+                      child: ProductCard(
+                        title: product["title"] as String,
+                        price: product["price"] as double,
+                        image: product["imageUrl"] as String,
+                        backgroundColor: index.isEven
+                            ? const Color.fromRGBO(216, 240, 253, 1)
+                            : const Color.fromRGBO(245, 247, 249, 1),
+                      ),
+                    );
+                  },
+                )
+              : ListView.builder(
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return ProductDetailsPage(product: product);
+                            },
+                          ),
+                        );
+                      },
+                      child: ProductCard(
+                        title: product["title"] as String,
+                        price: product["price"] as double,
+                        image: product["imageUrl"] as String,
+                        backgroundColor: index.isEven
+                            ? const Color.fromRGBO(216, 240, 253, 1)
+                            : const Color.fromRGBO(245, 247, 249, 1),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ],
     );
